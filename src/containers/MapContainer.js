@@ -33,6 +33,14 @@ class MapContainer extends React.Component {
       on: false,
       calculateRoute: false,
     };
+
+    this.getCoords = location => {
+      console.log(location)
+      const {
+        coords: {latitude, longitude},
+      } = location;
+      return {latitude, longitude};
+    };
     this.handlePress = () => {
       if (this.state.on) {
         this.setState({
@@ -97,7 +105,7 @@ class MapContainer extends React.Component {
             route_id: 123,
           },
         }).then(location => {
-          let locationArr = [...this.state.locations, location]
+          let locationArr = [...this.state.locations, this.getCoords(location)]
           this.setState({
             locations: locationArr,
           });
@@ -114,7 +122,7 @@ class MapContainer extends React.Component {
   }
 
   onLocation = location => {
-    let locationArr = [...this.state.locations, location]
+    let locationArr = [...this.state.locations, this.getCoords(location)]
     this.setState({
       locations: locationArr,
     });
@@ -127,7 +135,10 @@ class MapContainer extends React.Component {
     return (
       <Container>
         <MapSection>
-          <Map locations={this.state.locations} calculateRoute={this.state.calculateRoute}/>
+          <Map
+            locations={this.state.locations}
+            calculateRoute={this.state.calculateRoute}
+          />
         </MapSection>
         <ButtonSection>
           <MapButton on={this.state.on} onPress={this.handlePress} />

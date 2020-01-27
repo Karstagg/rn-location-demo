@@ -61,3 +61,5 @@ buck-out/
 .env
 
 /ios/mapTest/AppDelegate.m
+
+dev.env.js

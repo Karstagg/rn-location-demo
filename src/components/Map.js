@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapMarker from 'react-native-maps/lib/components/MapMarker';
+import MapPolyline from 'react-native-maps/lib/components/MapPolyline';
 
 const StyledMap = styled(MapView)`
   height: 100%;
@@ -251,8 +253,8 @@ const mapStyleJson = [
 const Map = props => {
   let shouldCalculate = () => {
     return props.locations.length > 1 && props.calculateRoute;
-  }
-  console.log(props.locations[0] && props.locations[0].coords.longitude);
+  };
+  console.log(props.locations);
   return (
     <StyledMap
       provider={PROVIDER_GOOGLE}
@@ -262,19 +264,23 @@ const Map = props => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
-      showsUserLocation={true}
-      followsUserLocation={true}
+      showsUserLocation={false}
+      followsUserLocation={false}
       customMapStyle={mapStyleJson}>
-      {shouldCalculate() &&
-        props.locations.map((location, index) => (
-          <MapView.Marker
-            key={index}
-            coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }}
+      {shouldCalculate() && (
+        <>
+          <MapMarker coordinate={props.locations[0]} pinColor={'#2AC062'} />
+          <MapPolyline
+            coordinates={props.locations}
+            strokeColor="#007174"
+            strokeWidth={6}
           />
-        ))}
+          <MapMarker
+            coordinate={props.locations[props.locations.length - 1]}
+            pinColor={'#f54290'}
+          />
+        </>
+      )}
     </StyledMap>
   );
 };
