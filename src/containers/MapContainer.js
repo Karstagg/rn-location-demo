@@ -33,14 +33,6 @@ class MapContainer extends React.Component {
       on: false,
       calculateRoute: false,
     };
-
-    this.getCoords = location => {
-      console.log(location)
-      const {
-        coords: {latitude, longitude},
-      } = location;
-      return {latitude, longitude};
-    };
     this.handlePress = () => {
       if (this.state.on) {
         this.setState({
@@ -55,28 +47,11 @@ class MapContainer extends React.Component {
         });
         BackgroundGeolocation.ready(
           {
-            // Geolocation Config
             desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-            distanceFilter: 50,
-            // Activity Recognition
+            distanceFilter: 10,
             stopTimeout: 1,
-            // Application config
-            debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+            debug: false,
             logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-            stopOnTerminate: false, // <-- Allow the background-service to continue tracking when user closes the app.
-            startOnBoot: true, // <-- Auto start tracking when device is powered-up.
-            // HTTP / SQLite config
-            url: 'http://yourserver.com/locations',
-            batchSync: false, // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-            autoSync: true, // <-- [Default: true] Set true to sync each location to server as it arrives.
-            headers: {
-              // <-- Optional HTTP headers
-              'X-FOO': 'bar',
-            },
-            params: {
-              // <-- Optional HTTP params
-              auth_token: 'maybe_your_server_authenticates_via_token_YES?',
-            },
           },
           state => {
             console.log(
@@ -85,9 +60,6 @@ class MapContainer extends React.Component {
             );
 
             if (!state.enabled) {
-              ////
-              // 3. Start tracking!
-              //
               BackgroundGeolocation.start(function() {
                 console.log('- Start success');
               });
@@ -95,15 +67,11 @@ class MapContainer extends React.Component {
           },
         );
         BackgroundGeolocation.getCurrentPosition({
-          timeout: 30, // 30 second timeout to fetch location
-          persist: true, // Defaults to state.enabled
-          maximumAge: 5000, // Accept the last-known-location if not older than 5000 ms.
-          desiredAccuracy: 10, // Try to fetch a location with an accuracy of `10` meters.
-          samples: 3, // How many location samples to attempt.
-          extras: {
-            // Custom meta-data.
-            route_id: 123,
-          },
+          timeout: 30,
+          persist: true,
+          maximumAge: 5000,
+          desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+          samples: 3,
         }).then(location => {
           let locationArr = [...this.state.locations, this.getCoords(location)]
           this.setState({
@@ -112,10 +80,14 @@ class MapContainer extends React.Component {
         });
         BackgroundGeolocation.onLocation(this.onLocation, this.onError);
       }
-      console.log(this.state.on);
     };
   }
-  componentDidMount(): void {}
+  getCoords = location => {
+    const {
+      coords: {latitude, longitude},
+    } = location;
+    return {latitude, longitude};
+  };
 
   componentWillUnmount() {
     BackgroundGeolocation.removeListeners();

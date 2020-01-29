@@ -1,12 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
+import {View, Text} from 'react-native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import MapMarker from 'react-native-maps/lib/components/MapMarker';
 import MapPolyline from 'react-native-maps/lib/components/MapPolyline';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const StyledMap = styled(MapView)`
   height: 100%;
   width: 100%;
+`;
+
+const PlaceHolderContainer = styled(View)`
+  height: 100%;
+  width: 100%;
+  background-color: #2ab0b3;
+  align-items: center;
+  justify-content: center;
+`;
+
+const PlaceHolderTitle = styled(Text)`
+  font-weight: 600;
+  font-size: 32px;
+  color: #ffffff;
+  margin-top: ${hp(10)}px;
+`;
+const PlaceHolderText = styled(Text)`
+  font-size: 18px;
+  color: #ffffff;
+  margin-top: ${hp(15)}px;
+  width: 94%;
+  text-align: center;
 `;
 
 const mapStyleJson = [
@@ -254,20 +278,22 @@ const Map = props => {
   let shouldCalculate = () => {
     return props.locations.length > 1 && props.calculateRoute;
   };
-  console.log(props.locations);
-  return (
-    <StyledMap
-      provider={PROVIDER_GOOGLE}
-      initialRegion={{
-        latitude: 37.33108059,
-        longitude: -122.03068245,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }}
-      showsUserLocation={false}
-      followsUserLocation={false}
-      customMapStyle={mapStyleJson}>
-      {shouldCalculate() && (
+  let setInitialRegion = () => {
+    return {
+      latitude: props.locations[0].latitude,
+      longitude: props.locations[0].longitude,
+      latitudeDelta: 0.09,
+      longitudeDelta: 0.05,
+    };
+  };
+  if (shouldCalculate()) {
+    return (
+      <StyledMap
+        provider={PROVIDER_GOOGLE}
+        initialRegion={setInitialRegion()}
+        showsUserLocation={false}
+        followsUserLocation={false}
+        customMapStyle={mapStyleJson}>
         <>
           <MapMarker coordinate={props.locations[0]} pinColor={'#2AC062'} />
           <MapPolyline
@@ -280,9 +306,21 @@ const Map = props => {
             pinColor={'#f54290'}
           />
         </>
-      )}
-    </StyledMap>
-  );
+      </StyledMap>
+    );
+  } else {
+    return (
+      <PlaceHolderContainer>
+        <PlaceHolderTitle>Location Demo</PlaceHolderTitle>
+        <PlaceHolderText>
+          {` a demo app to test 
+react-native-maps and
+react-native-background-geolocation`}
+        </PlaceHolderText>
+        <PlaceHolderText>Press Start to Continue</PlaceHolderText>
+      </PlaceHolderContainer>
+    );
+  }
 };
 
 export default Map;

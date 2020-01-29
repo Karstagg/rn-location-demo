@@ -17,7 +17,9 @@ const MapButton = props => {
   `;
   return (
     <StyledButton onPress={props.onPress}>
-      <Text style={{fontSize: 25, color: '#ffffff'}}>{!props.on ? 'Start' : 'Stop'}</Text>
+      <Text style={{fontSize: 25, color: '#ffffff'}}>
+        {!props.on ? 'Start' : 'Stop'}
+      </Text>
     </StyledButton>
   );
 };
