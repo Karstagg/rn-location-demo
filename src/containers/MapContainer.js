@@ -32,12 +32,17 @@ class MapContainer extends React.Component {
       locations: [],
       on: false,
       calculateRoute: false,
+      motion: 'Not Started',
+      moving: false,
     };
     this.handlePress = () => {
       if (this.state.on) {
         this.setState({
           on: false,
           calculateRoute: true,
+        });
+        BackgroundGeolocation.stop(state => {
+          console.log('Stopped', state.enabled);
         });
         BackgroundGeolocation.removeListeners();
       } else {
@@ -47,10 +52,11 @@ class MapContainer extends React.Component {
         });
         BackgroundGeolocation.ready(
           {
+            preventSuspend: true,
             desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
             distanceFilter: 10,
             stopTimeout: 1,
-            debug: false,
+            debug: true,
             logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
           },
           state => {
@@ -62,7 +68,7 @@ class MapContainer extends React.Component {
             if (!state.enabled) {
               BackgroundGeolocation.start(function() {
                 console.log('- Start success');
-              });
+              })
             }
           },
         );
@@ -79,6 +85,7 @@ class MapContainer extends React.Component {
           });
         });
         BackgroundGeolocation.onLocation(this.onLocation, this.onError);
+        BackgroundGeolocation.onMotionChange(this.onMotionChange);
       }
     };
   }
@@ -94,9 +101,17 @@ class MapContainer extends React.Component {
   }
 
   onLocation = location => {
+    console.log(location)
     let locationArr = [...this.state.locations, this.getCoords(location)]
     this.setState({
       locations: locationArr,
+    });
+  };
+  onMotionChange = event => {
+    let motion = event.isMoving ? 'Moving' : 'Stationary';
+    this.setState({
+      moving: event.isMoving,
+      motion: motion,
     });
   };
   onError = error => {
@@ -110,6 +125,8 @@ class MapContainer extends React.Component {
           <Map
             locations={this.state.locations}
             calculateRoute={this.state.calculateRoute}
+            motion={this.state.motion}
+            on={this.state.on}
           />
         </MapSection>
         <ButtonSection>

@@ -19,18 +19,21 @@ const PlaceHolderContainer = styled(View)`
   justify-content: center;
 `;
 
-const PlaceHolderTitle = styled(Text)`
-  font-weight: 600;
-  font-size: 32px;
-  color: #ffffff;
-  margin-top: ${hp(10)}px;
-`;
 const PlaceHolderText = styled(Text)`
   font-size: 18px;
   color: #ffffff;
-  margin-top: ${hp(15)}px;
+  margin-top: ${hp(10)}px;
   width: 94%;
   text-align: center;
+`;
+
+const PlaceHolderTitle = styled(PlaceHolderText)`
+  font-weight: 600;
+  font-size: 32px;
+`;
+
+const PlaceHolderCoords = styled(PlaceHolderText)`
+  font-size: 14px;
 `;
 
 const mapStyleJson = [
@@ -317,7 +320,17 @@ const Map = props => {
 react-native-maps and
 react-native-background-geolocation`}
         </PlaceHolderText>
-        <PlaceHolderText>Press Start to Continue</PlaceHolderText>
+        <PlaceHolderText>{props.motion}</PlaceHolderText>
+        <PlaceHolderCoords>
+          {props.locations[props.locations.length - 1]
+            ? props.locations[props.locations.length - 1].latitude +
+              ',' +
+              props.locations[props.locations.length - 1].longitude
+            : 'Latitude, longitude'}
+        </PlaceHolderCoords>
+        <PlaceHolderText>
+          {props.on ? 'Press Stop to view map' : 'Press Start to Continue'}
+        </PlaceHolderText>
       </PlaceHolderContainer>
     );
   }
